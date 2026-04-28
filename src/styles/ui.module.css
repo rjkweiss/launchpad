@@ -1,0 +1,271 @@
+/* ─── Chip ─── */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.chipSmall {
+  padding: 2px 9px;
+  font-size: 10px;
+}
+
+/* ─── StatCard ─── */
+
+.statCard {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 18px 20px;
+  flex: 1 1 140px;
+  min-width: 130;
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.statCardEmoji {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  font-size: 28px;
+  opacity: 0.15;
+}
+
+.statCardValue {
+  font-size: 30px;
+  font-weight: 800;
+  font-family: var(--mono);
+  line-height: 1;
+}
+
+.statCardLabel {
+  font-size: 11px;
+  color: var(--text-soft);
+  font-weight: 700;
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* ─── Modal ─── */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(30,21,53,0.35);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.modalContent {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 18px;
+  padding: 28px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  color: var(--text);
+  box-shadow: 0 8px 40px rgba(30,21,53,0.18), 0 2px 10px rgba(139,108,246,0.12);
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 22px;
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+  font-family: var(--font);
+}
+
+.modalClose {
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border);
+  color: var(--text-soft);
+  font-size: 15px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+}
+
+/* ─── Field ─── */
+
+.fieldLabel {
+  display: block;
+  font-size: 11px;
+  color: var(--text-soft);
+  margin-bottom: 5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.fieldWrapper {
+  margin-bottom: 14px;
+}
+
+/* ─── Inputs ─── */
+
+.input {
+  width: 100%;
+  padding: 11px 14px;
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-size: 14px;
+  font-family: var(--font);
+  font-weight: 500;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.input:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(139,108,246,0.12);
+}
+
+.select {
+  composes: input;
+  appearance: none;
+  cursor: pointer;
+  padding-right: 32px;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%239A90B0' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+.textarea {
+  composes: input;
+  min-height: 60px;
+  resize: vertical;
+}
+
+/* ─── Buttons ─── */
+
+.btnPrimary {
+  padding: 10px 22px;
+  background: linear-gradient(135deg, var(--purple), var(--lavender));
+  border: none;
+  border-radius: var(--radius-md);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font);
+  box-shadow: 0 2px 8px rgba(139,108,246,0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.btnPrimary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(139,108,246,0.4);
+}
+
+.btnSecondary {
+  padding: 10px 18px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-soft);
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font);
+  transition: all 0.15s;
+}
+
+.btnSecondary:hover {
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
+.btnSmall {
+  padding: 4px 10px;
+  background: var(--surface-alt);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-soft);
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 11px;
+  font-family: var(--font);
+  transition: all 0.15s;
+}
+
+.btnSmall:hover {
+  border-color: var(--purple);
+  color: var(--purple);
+}
+
+.btnDanger {
+  composes: btnSmall;
+  color: var(--pink);
+  border-color: var(--pink-soft);
+}
+
+.btnDanger:hover {
+  border-color: var(--pink);
+}
+
+/* ─── Custom Checkbox ─── */
+
+.checkboxWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.checkboxBox {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+
+.checkboxBoxChecked {
+  composes: checkboxBox;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.checkboxLabel {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.hiddenInput {
+  display: none;
+}

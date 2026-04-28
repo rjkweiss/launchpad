@@ -1,0 +1,63 @@
+/* ═══════════════════════════════════════════
+   🌸 LaunchPad — Design Tokens
+   ═══════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap');
+
+:root {
+  /* Surface */
+  --bg: #F6F4FB;
+  --surface: #FFFFFF;
+  --surface-alt: #EEEAF6;
+
+  /* Border */
+  --border: #D8D0EA;
+  --border-light: #E4DDEF;
+
+  /* Text */
+  --text: #1E1535;
+  --text-soft: #6B5F82;
+  --text-muted: #9A90B0;
+
+  /* Accent palette */
+  --blue: #5A9CF0;
+  --blue-soft: #CCDFFB;
+  --green: #4FBF8A;
+  --green-soft: #C6EDDA;
+  --yellow: #E8C044;
+  --yellow-soft: #FAF0C8;
+  --pink: #E87BA5;
+  --pink-soft: #F9D0DF;
+  --purple: #8B6CF6;
+  --purple-soft: #DAD0FB;
+  --lavender: #A78DF7;
+  --coral: #ED8872;
+  --coral-soft: #FBCFC4;
+
+  /* Shadows */
+  --shadow: 0 1px 3px rgba(30,21,53,0.06), 0 4px 16px rgba(139,108,246,0.10);
+  --shadow-hover: 0 2px 6px rgba(30,21,53,0.08), 0 8px 28px rgba(139,108,246,0.16);
+
+  /* Typography */
+  --font: 'Outfit', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
+
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+/* ─── Global Reset ─── */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
