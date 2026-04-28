@@ -163,7 +163,13 @@ export default function App() {
 
       {/* Modals */}
       <AppFormModal open={modal === "app"} onClose={closeModal} initial={editItem} onSave={(item) => upsert("applications", item)} />
-      <DSAFormModal open={modal === "dsa"} onClose={closeModal} initial={editItem} onSave={(item) => upsert("dsaProblems", item)} />
+      <DSAFormModal
+        open={modal === "dsa"}
+        onClose={closeModal}
+        initial={editItem}
+        onSave={(item) => upsert("dsaProblems", item)}
+        knownCompanies={[...new Set(data.dsaProblems.flatMap((p) => p.companyTags || []))].sort()}
+      />
       <SysDesignFormModal open={modal === "sys"} onClose={closeModal} initial={editItem} onSave={(item) => upsert("sysDesignNotes", item)} />
       <BehavioralFormModal open={modal === "beh"} onClose={closeModal} initial={editItem} onSave={(item) => upsert("behavioralStories", item)} />
     </div>

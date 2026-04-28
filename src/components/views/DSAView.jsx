@@ -63,6 +63,7 @@ function DSADetailPanel({ problem, onSave, onClose }) {
           <Chip label={problem.topic} color="var(--blue)" bg="var(--blue-soft)" small />
           <Chip label={problem.difficulty} color={dm.color} bg={dm.bg} small />
           {problem.timeMin && <span style={{ fontSize: 11, color: "var(--text-muted)", fontFamily: "var(--mono)" }}>{problem.timeMin}m</span>}
+          {(problem.companyTags || []).map(c => <Chip key={c} label={c} color="var(--coral)" bg="var(--coral-soft)" small />)}
         </div>
         <div className={styles.detailHeaderActions}>
           <button onClick={handleSave} className={ui.btnSmall} style={saved ? { color: "var(--green)", borderColor: "var(--green)" } : undefined}>{saved ? "✓ Saved" : "Save"}</button>
@@ -90,8 +91,8 @@ function DSADetailPanel({ problem, onSave, onClose }) {
         </div>}
         {activeTab === "analysis" && <div>
           {analyzing ? <div className={styles.aiSpinner}><div className={styles.spinner} /><span style={{ color: "var(--text-muted)", fontSize: 13 }}>Claude is reviewing your code...</span></div>
-          : analysis ? <div style={{ fontSize: 13, color: "var(--text)", lineHeight: 1.8 }}><SimpleMarkdown text={analysis} /></div>
-          : <div className={styles.aiEmpty}><span className={styles.aiEmptyIcon}>✦</span><span style={{ color: "var(--text-muted)", fontSize: 13 }}>Paste your code and click "AI Review" to get analysis</span></div>}
+            : analysis ? <div style={{ fontSize: 13, color: "var(--text)", lineHeight: 1.8 }}><SimpleMarkdown text={analysis} /></div>
+              : <div className={styles.aiEmpty}><span className={styles.aiEmptyIcon}>✦</span><span style={{ color: "var(--text-muted)", fontSize: 13 }}>Paste your code and click "AI Review" to get analysis</span></div>}
         </div>}
       </div>
     </div>
@@ -128,11 +129,63 @@ function DSAAnalytics({ problems }) {
       </div>
       <div style={panel}><div style={pTitle}>Solve Time Trend</div>
         {timed.length >= 2 ? <div style={{ position: "relative", height: 120 }}><svg width="100%" height="120" viewBox={`0 0 ${timed.length * 30} 120`} preserveAspectRatio="none" style={{ overflow: "visible" }}><defs><linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--blue)" stopOpacity="0.3" /><stop offset="100%" stopColor="var(--blue)" stopOpacity="0.02" /></linearGradient></defs><path d={`M0,${110 - (Number(timed[0].timeMin) / maxTime) * 90} ` + timed.map((p, i) => `L${i * 30},${110 - (Number(p.timeMin) / maxTime) * 90}`).join(" ") + ` L${(timed.length - 1) * 30},110 L0,110 Z`} fill="url(#areaGrad)" /><polyline points={timed.map((p, i) => `${i * 30},${110 - (Number(p.timeMin) / maxTime) * 90}`).join(" ")} fill="none" stroke="var(--blue)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />{timed.map((p, i) => <circle key={i} cx={i * 30} cy={110 - (Number(p.timeMin) / maxTime) * 90} r="3.5" fill="var(--surface)" stroke="var(--blue)" strokeWidth="2" />)}</svg></div>
-        : <div style={{ color: "var(--text-muted)", fontSize: 12, textAlign: "center", padding: 40 }}>Log 2+ timed problems to see trends</div>}
+          : <div style={{ color: "var(--text-muted)", fontSize: 12, textAlign: "center", padding: 40 }}>Log 2+ timed problems to see trends</div>}
       </div>
       <div style={{ ...panel, gridColumn: "1 / -1" }}><div style={pTitle}>Topic Mastery</div>
         <div className={styles.topicGrid}>{activeTops.map(([topic, s]) => { const avgT = s.totalTime > 0 ? Math.round(s.totalTime / s.count) : null; const intensity = Math.min(s.count / 8, 1); return <div key={topic} className={styles.topicCard} style={{ background: `rgba(139,108,246,${0.04 + intensity * 0.12})`, border: `1px solid rgba(139,108,246,${0.1 + intensity * 0.15})` }}><div className={styles.topicCardHeader}><span className={styles.topicCardName}>{topic}</span><span className={styles.topicCardCount}>{s.count}</span></div><div className={styles.topicCardChips}><Chip label={`E${s.easy}`} color="var(--green)" bg="var(--green-soft)" small /><Chip label={`M${s.med}`} color="var(--yellow)" bg="var(--yellow-soft)" small /><Chip label={`H${s.hard}`} color="var(--pink)" bg="var(--pink-soft)" small />{avgT && <span className={styles.topicCardAvg}>~{avgT}m</span>}{s.reviews > 0 && <Chip label={`${s.reviews}↻`} color="var(--pink)" bg="var(--pink-soft)" small />}</div></div>; })}{activeTops.length === 0 && <div className={styles.emptyState}>Solve problems to see topic mastery</div>}</div>
       </div>
+      {/* Company Prep */}
+      {(() => {
+        const companyStats = {};
+        problems.forEach(p => {
+          (p.companyTags || []).forEach(c => {
+            if (!companyStats[c]) companyStats[c] = { count: 0, easy: 0, med: 0, hard: 0, topics: new Set() };
+            companyStats[c].count++;
+            if (p.difficulty === "Easy") companyStats[c].easy++;
+            if (p.difficulty === "Medium") companyStats[c].med++;
+            if (p.difficulty === "Hard") companyStats[c].hard++;
+            companyStats[c].topics.add(p.topic);
+          });
+        });
+        const companySorted = Object.entries(companyStats).sort((a, b) => b[1].count - a[1].count);
+        if (companySorted.length === 0) return null;
+        const maxC = companySorted[0]?.[1].count || 1;
+        return (
+          <div style={{ ...panel, gridColumn: "1 / -1" }}>
+            <div style={pTitle}>Company Prep</div>
+            <div className={styles.topicGrid}>
+              {companySorted.map(([company, s]) => {
+                const intensity = Math.min(s.count / 10, 1);
+                return (
+                  <div key={company} className={styles.topicCard} style={{
+                    background: `rgba(237,136,114,${0.04 + intensity * 0.12})`,
+                    border: `1px solid rgba(237,136,114,${0.1 + intensity * 0.15})`,
+                  }}>
+                    <div className={styles.topicCardHeader}>
+                      <span className={styles.topicCardName}>{company}</span>
+                      <span style={{ fontFamily: "var(--mono)", fontSize: 11, fontWeight: 700, color: "var(--coral)" }}>{s.count}</span>
+                    </div>
+                    <div className={styles.topicCardChips}>
+                      <Chip label={`E${s.easy}`} color="var(--green)" bg="var(--green-soft)" small />
+                      <Chip label={`M${s.med}`} color="var(--yellow)" bg="var(--yellow-soft)" small />
+                      <Chip label={`H${s.hard}`} color="var(--pink)" bg="var(--pink-soft)" small />
+                      <span className={styles.topicCardAvg}>{s.topics.size} topics</span>
+                    </div>
+                    {/* Mini bar */}
+                    <div style={{ marginTop: 8, height: 5, background: "var(--surface-alt)", borderRadius: 3 }}>
+                      <div style={{
+                        height: "100%", width: `${(s.count / maxC) * 100}%`,
+                        background: "linear-gradient(90deg, var(--coral), var(--pink))",
+                        borderRadius: 3, transition: "width 0.4s ease",
+                      }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
       {monthKeys.length > 0 && <div style={{ ...panel, gridColumn: "1 / -1" }}><div style={pTitle}>Monthly Difficulty Progression</div>
         <div className={styles.monthlyRow}>{monthKeys.map(m => { const d = months[m]; const maxM = Math.max(...Object.values(months).map(x => x.total), 1); const h = (d.total / maxM) * 110; return <div key={m} className={styles.monthlyCol}><span className={styles.barChartValue}>{d.total}</span><div className={styles.monthlyStack}><div style={{ height: (d.hard / d.total) * h, background: "var(--pink)" }} /><div style={{ height: (d.med / d.total) * h, background: "var(--yellow)" }} /><div style={{ height: (d.easy / d.total) * h, background: "var(--green)" }} /></div><span className={styles.barChartLabel}>{m.slice(5)}/{m.slice(2, 4)}</span></div>; })}</div>
         <div className={styles.monthlyLegend}>{[["Easy", "var(--green)"], ["Medium", "var(--yellow)"], ["Hard", "var(--pink)"]].map(([l, c]) => <div key={l} className={styles.legendItem}><div className={styles.legendDot} style={{ background: c }} />{l}</div>)}</div>
@@ -164,17 +217,18 @@ export default function DSAView({ problems, onAdd, onEdit, onDelete, onUpdate })
         <button onClick={onAdd} className={ui.btnPrimary} style={{ padding: "8px 16px", fontSize: 12, marginLeft: "auto" }}>+ Problem</button>
       </div>
       <div className={styles.dsaTableWrap}>
-        <table className={styles.dsaTable}><thead><tr>{["Problem", "Topic", "Diff", "Time", "Date", "Code", "Review", ""].map(h => <th key={h}>{h}</th>)}</tr></thead>
+        <table className={styles.dsaTable}><thead><tr>{["Problem", "Topic", "Diff", "Companies", "Time", "Date", "Code", "Review", ""].map(h => <th key={h}>{h}</th>)}</tr></thead>
           <tbody>{sorted.map((p, i) => <tr key={p.id} className={`${i < sorted.length - 1 ? styles.dsaRowBorder : ""} ${styles.dsaRowClickable}`} onClick={() => setSelected(p.id)}>
             <td>{p.url ? <a href={p.url} target="_blank" rel="noreferrer" className={styles.dsaProblemLink} onClick={e => e.stopPropagation()}>{p.name}</a> : <span className={styles.dsaProblemName}>{p.name}</span>}</td>
             <td><Chip label={p.topic} color="var(--blue)" bg="var(--blue-soft)" small /></td>
             <td><Chip label={p.difficulty} color={DIFF_META[p.difficulty].color} bg={DIFF_META[p.difficulty].bg} small /></td>
+            <td><div style={{ display: "flex", gap: 3, flexWrap: "wrap" }}>{(p.companyTags || []).map(c => <Chip key={c} label={c} color="var(--coral)" bg="var(--coral-soft)" small />)}</div></td>
             <td className={styles.dsaTime}>{p.timeMin ? `${p.timeMin}m` : "—"}</td>
             <td className={styles.dsaDate}>{formatDate(p.date)}</td>
             <td><div style={{ display: "flex", gap: 3 }}>{p.code && <Chip label="✓" color="var(--green)" bg="var(--green-soft)" small />}{p.aiAnalysis && <Chip label="AI" color="var(--purple)" bg="var(--purple-soft)" small />}</div></td>
             <td>{p.needsReview && <Chip label="Review" color="var(--pink)" bg="var(--pink-soft)" small />}</td>
             <td><div style={{ display: "flex", gap: 4 }}><button className={ui.btnSmall} style={{ color: "var(--purple)", borderColor: "rgba(139,108,246,0.27)", background: "var(--purple-soft)" }} onClick={e => { e.stopPropagation(); setSelected(p.id); }}>View</button><button className={ui.btnSmall} onClick={e => { e.stopPropagation(); onEdit(p); }}>✎</button><button className={ui.btnDanger} onClick={e => { e.stopPropagation(); onDelete(p.id); }}>✕</button></div></td>
-          </tr>)}{sorted.length === 0 && <tr><td colSpan={8} className={styles.dsaEmpty}>No problems logged yet — start grinding! ✦</td></tr>}</tbody>
+          </tr>)}{sorted.length === 0 && <tr><td colSpan={9} className={styles.dsaEmpty}>No problems logged yet — start grinding! ✦</td></tr>}</tbody>
         </table>
       </div>
     </>}
