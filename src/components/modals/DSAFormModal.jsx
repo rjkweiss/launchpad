@@ -7,6 +7,7 @@ import ui from "../../styles/ui.module.css";
 const BLANK = {
   name: "", topic: DSA_TOPICS[0], difficulty: "Medium",
   timeMin: "", date: todayISO(), url: "", notes: "", needsReview: false,
+  code: "", aiAnalysis: "",
 };
 
 export default function DSAFormModal({ open, onClose, onSave, initial }) {

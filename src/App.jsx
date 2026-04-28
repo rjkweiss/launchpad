@@ -137,6 +137,7 @@ export default function App() {
               onAdd={() => openNew("dsa")}
               onEdit={(p) => openEdit("dsa", p)}
               onDelete={(id) => remove("dsaProblems", id)}
+              onUpdate={(p) => upsert("dsaProblems", p)}
             />
           )}
 
